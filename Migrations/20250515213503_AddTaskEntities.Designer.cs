@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using task_new.Data;
 
@@ -10,9 +11,11 @@ using task_new.Data;
 namespace task_new.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250515213503_AddTaskEntities")]
+    partial class AddTaskEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,26 +42,6 @@ namespace task_new.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Authors");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            BirthYear = 1814,
-                            Name = "Тарас Шевченко"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            BirthYear = 1856,
-                            Name = "Іван Франко"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            BirthYear = 1871,
-                            Name = "Леся Українка"
-                        });
                 });
 
             modelBuilder.Entity("task_new.Models.Book", b =>
@@ -84,43 +67,6 @@ namespace task_new.Migrations
                     b.HasIndex("AuthorId");
 
                     b.ToTable("Books");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AuthorId = 1,
-                            Title = "Кобзар",
-                            Year = 1840
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AuthorId = 1,
-                            Title = "Гайдамаки",
-                            Year = 1841
-                        },
-                        new
-                        {
-                            Id = 3,
-                            AuthorId = 2,
-                            Title = "Захар Беркут",
-                            Year = 1883
-                        },
-                        new
-                        {
-                            Id = 4,
-                            AuthorId = 2,
-                            Title = "Украдене щастя",
-                            Year = 1893
-                        },
-                        new
-                        {
-                            Id = 5,
-                            AuthorId = 3,
-                            Title = "Лісова пісня",
-                            Year = 1911
-                        });
                 });
 
             modelBuilder.Entity("task_new.Models.Book", b =>

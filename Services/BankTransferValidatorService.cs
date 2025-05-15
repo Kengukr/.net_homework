@@ -3,20 +3,15 @@ using System.Text.RegularExpressions;
 
 namespace task_new.Services.Validation
 {
-    public interface IBankTransferValidatorService
-    {
-        bool Validate(string transferString);
-    }
-
     public class BankTransferValidatorService : IBankTransferValidatorService
     {
-        private static readonly Regex IbanRegex = new(@"^[A-Z]{2}\d{2}[A-Z0-9]{1,30}$", RegexOptions.Compiled);
-        private static readonly HashSet<string> Iso4217CurrencyCodes = new(CultureInfo
-                .GetCultures(CultureTypes.SpecificCultures)
-                .Where(c => !c.IsNeutralCulture)
-                .Select(c => new RegionInfo(c.Name).ISOCurrencySymbol)
-                .Distinct());
+        private readonly ICurrencyService _currencyService;
+        private static readonly Regex IbanFormatRegex = new(@"^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$", RegexOptions.Compiled);
 
+        public BankTransferValidatorService(ICurrencyService currencyService)
+        {
+            _currencyService = currencyService;
+        }
 
         public bool Validate(string transferString)
         {
@@ -32,13 +27,10 @@ namespace task_new.Services.Validation
             var currencyCode = parts[2].Trim();
             var amountString = parts[3].Trim();
 
-            if (!ValidateIban(ibanFrom))
+            if (!ValidateIban(ibanFrom) || !ValidateIban(ibanTo))
                 return false;
 
-            if (!ValidateIban(ibanTo))
-                return false;
-
-            if (!ValidateCurrencyCode(currencyCode))
+            if (!_currencyService.IsValidCurrencyCode(currencyCode))
                 return false;
 
             if (!ValidateAmount(amountString))
@@ -46,22 +38,16 @@ namespace task_new.Services.Validation
 
             return true;
         }
-
+        
 
         private bool ValidateIban(string iban)
         {
-            return IbanRegex.IsMatch(iban);
-        }
-
-        private bool ValidateCurrencyCode(string currencyCode)
-        {
-            return Iso4217CurrencyCodes.Contains(currencyCode);
+            return IbanFormatRegex.IsMatch(iban);
         }
 
         private bool ValidateAmount(string amountString)
         {
             return decimal.TryParse(amountString, NumberStyles.Number, CultureInfo.InvariantCulture, out var amount) && amount > 0;
         }
-
     }
 }
